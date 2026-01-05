@@ -1,6 +1,17 @@
+const config = require("./config");
+
+if (!config.isValid) {
+  console.error(
+    `⚠️ Bot not started. Missing env vars: ${config.missing.join(", ")}. ` +
+      "Add them in Railway Variables and redeploy."
+  );
+  setInterval(() => {}, 60 * 60 * 1000);
+  return;
+}
+
+const { BOT_TOKEN, ADMIN_ID, STUDENT_ID } = config;
 const { Telegraf } = require("telegraf");
 const redis = require("./redis");
-const { BOT_TOKEN, ADMIN_ID, STUDENT_ID } = require("./config");
 const { gate, isAdmin } = require("./auth");
 
 const { startQuiz, handleAnswer } = require("./flows/quiz");
@@ -24,27 +35,27 @@ bot.start(async (ctx) => {
   if (uid === ADMIN_ID) {
     return ctx.reply(
       "✅ Admin commands:\n" +
-      "/addpdf <name>\n" +
-      "/addq (multi-line)\n" +
-      "/importq (upload JSON file)\n" +
-      "/addnotes <topic> <notes>\n" +
-      "/broadcast <message>\n" +
-      "/setdailytime HH:MM\n\n" +
-      "Student:\n/daily /quiz /mock /notes /pdf /progress"
+        "/addpdf <name>\n" +
+        "/addq (multi-line)\n" +
+        "/importq (upload JSON file)\n" +
+        "/addnotes <topic> <notes>\n" +
+        "/broadcast <message>\n" +
+        "/setdailytime HH:MM\n\n" +
+        "Student:\n/daily /quiz /mock /notes /pdf /progress"
     );
   }
 
   return ctx.reply(
     "📚 SSC CGL Prep Bot\n\nCommands:\n" +
-    "/daily\n" +
-    "/quiz (10)\n" +
-    "/quiz <topic>\n" +
-    "/mock (25)\n" +
-    "/notes <topic>\n" +
-    "/pdf (list)\n" +
-    "/pdf <name>\n" +
-    "/progress\n\n" +
-    "Or tap button when daily reminder comes ✅"
+      "/daily\n" +
+      "/quiz (10)\n" +
+      "/quiz <topic>\n" +
+      "/mock (25)\n" +
+      "/notes <topic>\n" +
+      "/pdf (list)\n" +
+      "/pdf <name>\n" +
+      "/progress\n\n" +
+      "Or tap button when daily reminder comes ✅"
   );
 });
 
@@ -55,11 +66,12 @@ bot.command("daily", async (ctx) => {
 
   await ctx.reply(
     "✅ Today plan:\n" +
-    "1) Quant 20 min\n" +
-    "2) English 20 min\n" +
-    "3) Reasoning 15 min\n" +
-    "4) GK 10 min\n\n" +
-    "Tap below to start quiz:", {
+      "1) Quant 20 min\n" +
+      "2) English 20 min\n" +
+      "3) Reasoning 15 min\n" +
+      "4) GK 10 min\n\n" +
+      "Tap below to start quiz:",
+    {
       reply_markup: {
         inline_keyboard: [
           [{ text: "✅ Start Daily Quiz (10)", callback_data: "daily_quiz" }]
